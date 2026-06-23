@@ -1,9 +1,10 @@
 import { Stack } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Button, Dialog, Portal, Text, useTheme } from 'react-native-paper';
+import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
 
 import { CreateTodoFab } from '@/components/CreateTodoFab';
+import { DeleteTodoDialog } from '@/components/DeleteTodoDialog';
 import { TodoListItem } from '@/components/TodoListItem';
 import { todoService } from '@/services/todoService';
 import type { TodoDto } from '@/types/todo';
@@ -16,7 +17,6 @@ export default function Index() {
   const [error, setError] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [todoToDelete, setTodoToDelete] = useState<TodoDto | null>(null);
-  const [deleting, setDeleting] = useState(false);
 
   const loadTodos = useCallback(async (isRefresh = false) => {
     if (isRefresh) {
@@ -55,34 +55,12 @@ export default function Index() {
     }
   }, []);
 
-  const handleDeleteRequest = useCallback((todo: TodoDto) => {
-    setTodoToDelete(todo);
-  }, []);
-
-  const handleDismissDelete = useCallback(() => {
-    if (!deleting) {
-      setTodoToDelete(null);
-    }
-  }, [deleting]);
-
-  const handleConfirmDelete = useCallback(async () => {
-    if (!todoToDelete) {
-      return;
-    }
-
-    setDeleting(true);
-
-    try {
-      await todoService.delete(todoToDelete.id);
-      setTodos((current) => current.filter((item) => item.id !== todoToDelete.id));
-      setTodoToDelete(null);
-    } finally {
-      setDeleting(false);
-    }
-  }, [todoToDelete]);
-
   const handleTodoCreated = useCallback((created: TodoDto) => {
     setTodos((current) => [created, ...current]);
+  }, []);
+
+  const handleTodoDeleted = useCallback((id: string) => {
+    setTodos((current) => current.filter((item) => item.id !== id));
   }, []);
 
   return (
@@ -121,7 +99,7 @@ export default function Index() {
               <TodoListItem
                 todo={item}
                 onToggleCompleted={handleToggleCompleted}
-                onDeleteRequest={handleDeleteRequest}
+                onDeleteRequest={setTodoToDelete}
                 disabled={updatingId === item.id}
               />
             )}
@@ -129,34 +107,11 @@ export default function Index() {
         )}
         {!loading && !error ? <CreateTodoFab onCreated={handleTodoCreated} /> : null}
       </View>
-      <Portal>
-        <Dialog visible={todoToDelete !== null} onDismiss={handleDismissDelete}>
-          <Dialog.Title>Delete todo?</Dialog.Title>
-          <Dialog.Content>
-            <Text variant="bodyMedium">
-              Are you sure you want to delete &quot;{todoToDelete?.title}&quot;?
-            </Text>
-            {todoToDelete?.description?.trim() ? (
-              <Text variant="bodySmall" style={styles.deleteDescription}>
-                {todoToDelete.description.trim()}
-              </Text>
-            ) : null}
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={handleDismissDelete} disabled={deleting}>
-              Cancel
-            </Button>
-            <Button
-              onPress={handleConfirmDelete}
-              loading={deleting}
-              disabled={deleting}
-              textColor={theme.colors.error}
-            >
-              Delete
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <DeleteTodoDialog
+        todo={todoToDelete}
+        onDismiss={() => setTodoToDelete(null)}
+        onDeleted={handleTodoDeleted}
+      />
     </>
   );
 }
@@ -184,10 +139,6 @@ const styles = StyleSheet.create({
   },
   message: {
     textAlign: 'center',
-    opacity: 0.8,
-  },
-  deleteDescription: {
-    marginTop: 8,
     opacity: 0.8,
   },
 });
