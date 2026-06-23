@@ -1,68 +1,113 @@
-import { StyleSheet, View } from 'react-native';
-import { SegmentedButtons, Surface, Text, useTheme } from 'react-native-paper';
+import { Stack } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Button, List, Text, useTheme } from 'react-native-paper';
 
-import { type ThemePreference, useThemePreference } from '@/theme/ThemeContext';
+import { todoService } from '@/services/todoService';
+import type { TodoDto } from '@/types/todo';
 
-const themeOptions = [
-  { value: 'system', label: 'System' },
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-] as const satisfies readonly {
-  value: ThemePreference;
-  label: string;
-}[];
+function formatCreatedAt(value: string) {
+  return new Date(value).toLocaleString();
+}
 
 export default function Index() {
   const theme = useTheme();
-  const { colorScheme, preference, setPreference } = useThemePreference();
+  const [todos, setTodos] = useState<TodoDto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadTodos = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+
+    try {
+      setError(null);
+      const data = await todoService.getAll();
+      setTodos(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load todos');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadTodos();
+  }, [loadTodos]);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <Surface style={styles.card} elevation={1}>
-        <Text variant="headlineSmall" style={styles.title}>
-          toDo
-        </Text>
-        <Text variant="bodyMedium" style={styles.subtitle}>
-          React Native Paper is configured with {colorScheme} theme colors.
-        </Text>
-        <Text variant="labelLarge" style={styles.label}>
-          Theme
-        </Text>
-        <SegmentedButtons
-          value={preference}
-          onValueChange={(value) => setPreference(value as ThemePreference)}
-          buttons={themeOptions.map((option) => ({
-            value: option.value,
-            label: option.label,
-          }))}
-        />
-      </Surface>
-    </View>
+    <>
+      <Stack.Screen options={{ title: 'toDo' }} />
+      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        {loading ? (
+          <View style={styles.centered}>
+            <ActivityIndicator animating size="large" />
+          </View>
+        ) : error ? (
+          <View style={styles.centered}>
+            <Text variant="bodyLarge" style={styles.message}>
+              {error}
+            </Text>
+            <Button mode="contained" onPress={() => loadTodos()}>
+              Retry
+            </Button>
+          </View>
+        ) : (
+          <FlatList
+            data={todos}
+            keyExtractor={(item) => item.id}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={() => loadTodos(true)} />
+            }
+            contentContainerStyle={
+              todos.length === 0 ? styles.emptyListContent : styles.listContent
+            }
+            ListEmptyComponent={
+              <Text variant="bodyLarge" style={styles.message}>
+                No todos yet.
+              </Text>
+            }
+            renderItem={({ item }) => (
+              <List.Item
+                title={item.title}
+                description={formatCreatedAt(item.createdAt)}
+                left={(props) => <List.Icon {...props} icon="checkbox-blank-outline" />}
+              />
+            )}
+          />
+        )}
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    gap: 16,
+  },
+  listContent: {
+    paddingBottom: 24,
+  },
+  emptyListContent: {
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
   },
-  card: {
-    width: '100%',
-    maxWidth: 420,
-    padding: 24,
-    borderRadius: 16,
-    gap: 16,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  subtitle: {
+  message: {
     textAlign: 'center',
     opacity: 0.8,
-  },
-  label: {
-    marginTop: 8,
   },
 });
