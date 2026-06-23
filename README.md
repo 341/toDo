@@ -24,6 +24,12 @@ npm run android  # Android emulator or device (development build)
 npm run web      # web browser
 ```
 
+After changing app icons, splash screen, or other native config in `app.json`, regenerate the iOS and Android projects:
+
+```bash
+npx expo prebuild --clean
+```
+
 ## Using the app
 
 When you open the app, the home screen loads your todo list from the API.
