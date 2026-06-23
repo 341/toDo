@@ -64,7 +64,9 @@ export function CreateTodoFab({ onCreated }: CreateTodoFabProps) {
           <Dialog.Title>New todo</Dialog.Title>
           <Dialog.Content style={styles.dialogContent}>
             <TextInput
+              testID="create-todo-title"
               label="Title"
+              accessibilityLabel="Title"
               value={title}
               onChangeText={(text) => {
                 setTitle(text);
@@ -80,7 +82,9 @@ export function CreateTodoFab({ onCreated }: CreateTodoFabProps) {
               {titleError}
             </HelperText>
             <TextInput
+              testID="create-todo-description"
               label="Description"
+              accessibilityLabel="Description"
               value={description}
               onChangeText={setDescription}
               mode="outlined"
