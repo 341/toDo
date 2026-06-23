@@ -13,6 +13,7 @@ export default function Index() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   const loadTodos = useCallback(async (isRefresh = false) => {
     if (isRefresh) {
@@ -36,6 +37,20 @@ export default function Index() {
   useEffect(() => {
     loadTodos();
   }, [loadTodos]);
+
+  const handleToggleCompleted = useCallback(async (todo: TodoDto) => {
+    setUpdatingId(todo.id);
+
+    try {
+      const updated = await todoService.update(todo.id, {
+        completed: !todo.completed,
+      });
+
+      setTodos((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+    } finally {
+      setUpdatingId(null);
+    }
+  }, []);
 
   return (
     <>
@@ -69,7 +84,13 @@ export default function Index() {
                 No todos yet.
               </Text>
             }
-            renderItem={({ item }) => <TodoListItem todo={item} />}
+            renderItem={({ item }) => (
+              <TodoListItem
+                todo={item}
+                onToggleCompleted={handleToggleCompleted}
+                disabled={updatingId === item.id}
+              />
+            )}
           />
         )}
       </View>
