@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { PaperProvider, useTheme } from 'react-native-paper';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { darkTheme, lightTheme } from '@/theme/paper';
 import { ThemeProvider, useThemePreference } from '@/theme/ThemeContext';
@@ -32,15 +33,17 @@ function RootLayoutNav() {
   const paperTheme = colorScheme === 'dark' ? darkTheme : lightTheme;
 
   return (
-    <PaperProvider
-      theme={paperTheme}
-      settings={{
-        icon: (props) => <MaterialDesignIcons {...props} />,
-      }}
-    >
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-      <ThemedStack />
-    </PaperProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <PaperProvider
+        theme={paperTheme}
+        settings={{
+          icon: (props) => <MaterialDesignIcons {...props} />,
+        }}
+      >
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <ThemedStack />
+      </PaperProvider>
+    </GestureHandlerRootView>
   );
 }
 

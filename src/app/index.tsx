@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
+import { ActivityIndicator, Button, Dialog, Portal, Text, useTheme } from 'react-native-paper';
 
 import { TodoListItem } from '@/components/TodoListItem';
 import { todoService } from '@/services/todoService';
@@ -14,6 +14,8 @@ export default function Index() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [todoToDelete, setTodoToDelete] = useState<TodoDto | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const loadTodos = useCallback(async (isRefresh = false) => {
     if (isRefresh) {
@@ -52,6 +54,32 @@ export default function Index() {
     }
   }, []);
 
+  const handleDeleteRequest = useCallback((todo: TodoDto) => {
+    setTodoToDelete(todo);
+  }, []);
+
+  const handleDismissDelete = useCallback(() => {
+    if (!deleting) {
+      setTodoToDelete(null);
+    }
+  }, [deleting]);
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!todoToDelete) {
+      return;
+    }
+
+    setDeleting(true);
+
+    try {
+      await todoService.delete(todoToDelete.id);
+      setTodos((current) => current.filter((item) => item.id !== todoToDelete.id));
+      setTodoToDelete(null);
+    } finally {
+      setDeleting(false);
+    }
+  }, [todoToDelete]);
+
   return (
     <>
       <Stack.Screen options={{ title: 'toDo' }} />
@@ -88,12 +116,36 @@ export default function Index() {
               <TodoListItem
                 todo={item}
                 onToggleCompleted={handleToggleCompleted}
+                onDeleteRequest={handleDeleteRequest}
                 disabled={updatingId === item.id}
               />
             )}
           />
         )}
       </View>
+      <Portal>
+        <Dialog visible={todoToDelete !== null} onDismiss={handleDismissDelete}>
+          <Dialog.Title>Delete todo?</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">
+              Are you sure you want to delete &quot;{todoToDelete?.title}&quot;?
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={handleDismissDelete} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button
+              onPress={handleConfirmDelete}
+              loading={deleting}
+              disabled={deleting}
+              textColor={theme.colors.error}
+            >
+              Delete
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </>
   );
 }
