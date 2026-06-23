@@ -102,12 +102,12 @@ Todos are fetched from:
 
 Each todo has:
 
-| Field         | Type    | Description              |
-| ------------- | ------- | ------------------------ |
-| `id`          | string  | Unique identifier        |
-| `title`       | string  | Todo title               |
-| `description` | string  | Optional details         |
-| `completed`   | boolean | Completion status        |
-| `createdAt`   | string  | ISO creation timestamp   |
+| Field         | Type    | Description            |
+| ------------- | ------- | ---------------------- |
+| `id`          | string  | Unique identifier      |
+| `title`       | string  | Todo title             |
+| `description` | string  | Optional details       |
+| `completed`   | boolean | Completion status      |
+| `createdAt`   | string  | ISO creation timestamp |
 
 Supported operations: list, get by id, create, update, delete.
