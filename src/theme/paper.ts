@@ -1,14 +1,14 @@
 import { MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
 
-const brandPrimary = '#208AEF';
+const brandPrimary = '#6050f0';
 
 export const lightTheme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
     primary: brandPrimary,
-    primaryContainer: '#D3E7FD',
-    onPrimaryContainer: '#001B3D',
+    primaryContainer: '#E8E4FF',
+    onPrimaryContainer: '#1F1580',
   },
 };
 
@@ -17,7 +17,7 @@ export const darkTheme = {
   colors: {
     ...MD3DarkTheme.colors,
     primary: brandPrimary,
-    primaryContainer: '#004A8F',
-    onPrimaryContainer: '#D3E7FD',
+    primaryContainer: '#4A3DB8',
+    onPrimaryContainer: '#E8E4FF',
   },
 };
