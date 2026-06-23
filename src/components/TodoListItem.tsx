@@ -16,6 +16,16 @@ function formatCreatedAt(value: string) {
   return new Date(value).toLocaleString();
 }
 
+function formatListDescription(todo: TodoDto) {
+  const createdAt = formatCreatedAt(todo.createdAt);
+
+  if (todo.description?.trim()) {
+    return `${todo.description.trim()}\n${createdAt}`;
+  }
+
+  return createdAt;
+}
+
 export function TodoListItem({
   todo,
   onToggleCompleted,
@@ -43,7 +53,8 @@ export function TodoListItem({
     <Swipeable ref={swipeableRef} renderRightActions={renderRightActions} friction={2}>
       <List.Item
         title={todo.title}
-        description={formatCreatedAt(todo.createdAt)}
+        description={formatListDescription(todo)}
+        descriptionNumberOfLines={3}
         style={{ backgroundColor: theme.colors.surface }}
         titleStyle={todo.completed ? { textDecorationLine: 'line-through' } : undefined}
         left={() => (

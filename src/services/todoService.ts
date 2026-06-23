@@ -39,6 +39,7 @@ export const todoService = {
       method: 'POST',
       body: JSON.stringify({
         completed: false,
+        description: '',
         ...data,
       }),
     });
