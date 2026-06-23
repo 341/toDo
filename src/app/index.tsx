@@ -1,14 +1,11 @@
 import { Stack } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Button, List, Text, useTheme } from 'react-native-paper';
+import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper';
 
+import { TodoListItem } from '@/components/TodoListItem';
 import { todoService } from '@/services/todoService';
 import type { TodoDto } from '@/types/todo';
-
-function formatCreatedAt(value: string) {
-  return new Date(value).toLocaleString();
-}
 
 export default function Index() {
   const theme = useTheme();
@@ -72,13 +69,7 @@ export default function Index() {
                 No todos yet.
               </Text>
             }
-            renderItem={({ item }) => (
-              <List.Item
-                title={item.title}
-                description={formatCreatedAt(item.createdAt)}
-                left={(props) => <List.Icon {...props} icon="checkbox-blank-outline" />}
-              />
-            )}
+            renderItem={({ item }) => <TodoListItem todo={item} />}
           />
         )}
       </View>
