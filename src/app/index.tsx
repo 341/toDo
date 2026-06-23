@@ -1,7 +1,17 @@
 import { Stack } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Button, Dialog, Portal, Text, useTheme } from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Button,
+  Dialog,
+  FAB,
+  HelperText,
+  Portal,
+  Text,
+  TextInput,
+  useTheme,
+} from 'react-native-paper';
 
 import { TodoListItem } from '@/components/TodoListItem';
 import { todoService } from '@/services/todoService';
@@ -16,6 +26,10 @@ export default function Index() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [todoToDelete, setTodoToDelete] = useState<TodoDto | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [createDialogVisible, setCreateDialogVisible] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [titleError, setTitleError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const loadTodos = useCallback(async (isRefresh = false) => {
     if (isRefresh) {
@@ -80,6 +94,42 @@ export default function Index() {
     }
   }, [todoToDelete]);
 
+  const resetCreateDialog = useCallback(() => {
+    setCreateDialogVisible(false);
+    setNewTitle('');
+    setTitleError(null);
+  }, []);
+
+  const handleDismissCreate = useCallback(() => {
+    if (!saving) {
+      resetCreateDialog();
+    }
+  }, [resetCreateDialog, saving]);
+
+  const handleOpenCreate = useCallback(() => {
+    setTitleError(null);
+    setCreateDialogVisible(true);
+  }, []);
+
+  const handleSaveTodo = useCallback(async () => {
+    const trimmedTitle = newTitle.trim();
+
+    if (!trimmedTitle) {
+      setTitleError('Title is required');
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      const created = await todoService.create({ title: trimmedTitle });
+      setTodos((current) => [created, ...current]);
+      resetCreateDialog();
+    } finally {
+      setSaving(false);
+    }
+  }, [newTitle, resetCreateDialog]);
+
   return (
     <>
       <Stack.Screen options={{ title: 'toDo' }} />
@@ -122,8 +172,40 @@ export default function Index() {
             )}
           />
         )}
+        {!loading && !error ? (
+          <FAB icon="plus" style={styles.fab} onPress={handleOpenCreate} />
+        ) : null}
       </View>
       <Portal>
+        <Dialog visible={createDialogVisible} onDismiss={handleDismissCreate}>
+          <Dialog.Title>New todo</Dialog.Title>
+          <Dialog.Content>
+            <TextInput
+              label="Title"
+              value={newTitle}
+              onChangeText={(text) => {
+                setNewTitle(text);
+                if (titleError) {
+                  setTitleError(null);
+                }
+              }}
+              mode="outlined"
+              error={!!titleError}
+              autoFocus
+            />
+            <HelperText type="error" visible={!!titleError}>
+              {titleError}
+            </HelperText>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={handleDismissCreate} disabled={saving}>
+              Cancel
+            </Button>
+            <Button onPress={handleSaveTodo} loading={saving} disabled={saving}>
+              Save
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
         <Dialog visible={todoToDelete !== null} onDismiss={handleDismissDelete}>
           <Dialog.Title>Delete todo?</Dialog.Title>
           <Dialog.Content>
@@ -162,16 +244,22 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   listContent: {
-    paddingBottom: 24,
+    paddingBottom: 88,
   },
   emptyListContent: {
     flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
+    paddingBottom: 88,
   },
   message: {
     textAlign: 'center',
     opacity: 0.8,
+  },
+  fab: {
+    position: 'absolute',
+    right: 16,
+    bottom: 16,
   },
 });

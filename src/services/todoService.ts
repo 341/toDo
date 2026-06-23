@@ -37,7 +37,10 @@ export const todoService = {
   create(data: CreateTodoDto): Promise<TodoDto> {
     return request<TodoDto>(RESOURCE_PATH, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        completed: false,
+        ...data,
+      }),
     });
   },
 
