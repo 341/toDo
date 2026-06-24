@@ -2,6 +2,44 @@
 
 A cross-platform todo app built with [Expo](https://expo.dev) (SDK 56), [Expo Router](https://docs.expo.dev/router/introduction/), and [React Native Paper](https://callstack.github.io/react-native-paper/). Todos are stored on a remote [MockAPI](https://mockapi.io) backend.
 
+## Implementation summary
+
+This project was built for the PRITECH React Native technical task.
+
+### What was implemented
+
+- **Task list screen** with loading, error, pull-to-refresh, and empty states
+- **Add task** via floating action button and modal form
+- **Mark complete / incomplete** from the list or detail screen
+- **Delete task** with swipe action and confirmation dialog
+- **Task details screen** (`/todo/[id]`) showing title, description, status, and created date
+- **Input validation** — title is required when creating a task
+- **Public API integration** — todos are loaded and saved through MockAPI
+
+### Bonus features
+
+- **Search** tasks by title on the list screen
+- **Filter** tasks by status (All / Active / Done)
+- **Navigation** between list and detail screens using Expo Router
+
+### Tech stack
+
+- React Native + TypeScript
+- Expo SDK 56 and Expo Router
+- React Native Paper (Material Design 3)
+- MockAPI for remote task storage
+
+### Screenshots
+
+| Screen | Preview |
+| ------ | ------- |
+| Task list | ![Task list](docs/screenshots/toDo-list.png) |
+| Create task | ![Create task](docs/screenshots/toDo-new-item.png) |
+| Task details | ![Task details](docs/screenshots/toDo-view-item.png) |
+| Delete task | ![Delete task](docs/screenshots/toDo-delete-item.png) |
+
+More details in [`docs/screenshots/`](docs/screenshots/README.md).
+
 ## Getting started
 
 Install dependencies:
@@ -37,6 +75,9 @@ When you open the app, the home screen loads your todo list from the API.
 ### View todos
 
 - Each row shows the **title** and **created date**.
+- **Search** by title using the search bar at the top.
+- **Filter** by status with All, Active, or Done.
+- Tap a row to open the **task details** screen.
 - **Pull down** on the list to refresh.
 - If loading fails, tap **Retry** to try again.
 
@@ -57,9 +98,8 @@ New todos are created with `completed` set to `false`.
 
 ### Read the description
 
-- If a todo has a description, tap the row to expand or collapse it accordion-style.
-- A **chevron** on the right indicates whether the row is expanded.
-- Todos without a description do not expand.
+- Open a task from the list to view its full details, including description and status.
+- From the detail screen you can mark the task complete or delete it.
 
 ### Delete a todo
 
@@ -93,11 +133,12 @@ CI runs `npm run check` on pushes and pull requests to `main`.
 
 ```
 src/
-  app/           # Expo Router screens and layout
-  components/    # UI components (list item, create FAB, delete dialog)
+  app/           # Expo Router screens (list + task details)
+  components/    # UI components (list item, filters, create FAB, delete dialog)
   services/      # MockAPI client (todoService)
   theme/         # Paper light/dark themes and theme preference
   types/         # Todo DTO types
+  utils/         # Shared helpers
 ```
 
 ## API

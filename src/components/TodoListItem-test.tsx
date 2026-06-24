@@ -1,5 +1,5 @@
 import { TodoListItem } from '@/components/TodoListItem';
-import { fireEvent, renderWithProviders, waitFor } from '@/test/test-utils';
+import { fireEvent, renderWithProviders } from '@/test/test-utils';
 import type { TodoDto } from '@/types/todo';
 
 type RenderResult = Awaited<ReturnType<typeof renderWithProviders>>;
@@ -22,7 +22,12 @@ function getEnabledIconButton(getAllByTestId: RenderResult['getAllByTestId']) {
 describe('<TodoListItem />', () => {
   it('renders the todo title', async () => {
     const { getByText } = await renderWithProviders(
-      <TodoListItem todo={baseTodo} onToggleCompleted={jest.fn()} onDeleteRequest={jest.fn()} />,
+      <TodoListItem
+        todo={baseTodo}
+        onToggleCompleted={jest.fn()}
+        onDeleteRequest={jest.fn()}
+        onPress={jest.fn()}
+      />,
     );
 
     expect(getByText('Buy milk')).toBeTruthy();
@@ -35,6 +40,7 @@ describe('<TodoListItem />', () => {
         todo={baseTodo}
         onToggleCompleted={onToggleCompleted}
         onDeleteRequest={jest.fn()}
+        onPress={jest.fn()}
       />,
     );
 
@@ -44,23 +50,19 @@ describe('<TodoListItem />', () => {
     expect(onToggleCompleted).toHaveBeenCalledWith(baseTodo);
   });
 
-  it('expands the description when a row with description is pressed', async () => {
-    const todoWithDescription = {
-      ...baseTodo,
-      description: 'Get organic whole milk',
-    };
-    const { getByRole, getByText } = await renderWithProviders(
+  it('calls onPress when the row is pressed', async () => {
+    const onPress = jest.fn();
+    const { getByText } = await renderWithProviders(
       <TodoListItem
-        todo={todoWithDescription}
+        todo={baseTodo}
         onToggleCompleted={jest.fn()}
         onDeleteRequest={jest.fn()}
+        onPress={onPress}
       />,
     );
 
-    fireEvent.press(getByRole('button', { expanded: false }));
+    fireEvent.press(getByText('Buy milk'));
 
-    await waitFor(() => {
-      expect(getByText('Get organic whole milk')).toBeTruthy();
-    });
+    expect(onPress).toHaveBeenCalledWith(baseTodo);
   });
 });

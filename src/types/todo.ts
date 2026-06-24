@@ -1,3 +1,5 @@
+export type StatusFilter = 'all' | 'active' | 'completed';
+
 export type TodoDto = {
   id: string;
   title: string;

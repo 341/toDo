@@ -1,31 +1,28 @@
-import { useRef, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useRef } from 'react';
+import { Pressable, StyleSheet } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { IconButton, List, Text, useTheme } from 'react-native-paper';
+import { IconButton, List, useTheme } from 'react-native-paper';
 
 import type { TodoDto } from '@/types/todo';
+import { formatCreatedAt } from '@/utils/formatCreatedAt';
 
 type TodoListItemProps = {
   todo: TodoDto;
   onToggleCompleted: (todo: TodoDto) => void;
   onDeleteRequest: (todo: TodoDto) => void;
+  onPress: (todo: TodoDto) => void;
   disabled?: boolean;
 };
-
-function formatCreatedAt(value: string) {
-  return new Date(value).toLocaleString();
-}
 
 export function TodoListItem({
   todo,
   onToggleCompleted,
   onDeleteRequest,
+  onPress,
   disabled = false,
 }: TodoListItemProps) {
   const theme = useTheme();
   const swipeableRef = useRef<Swipeable>(null);
-  const [expanded, setExpanded] = useState(false);
-  const hasDescription = Boolean(todo.description?.trim());
 
   const handleDeletePress = () => {
     swipeableRef.current?.close();
@@ -54,31 +51,15 @@ export function TodoListItem({
 
   return (
     <Swipeable ref={swipeableRef} renderRightActions={renderRightActions} friction={2}>
-      {hasDescription ? (
-        <List.Accordion
-          title={todo.title}
-          description={formatCreatedAt(todo.createdAt)}
-          expanded={expanded}
-          onPress={() => setExpanded((current) => !current)}
-          style={itemStyle}
-          titleStyle={titleStyle}
-          left={checkbox}
-        >
-          <View
-            style={[styles.expandedContent, { backgroundColor: theme.colors.elevation.level1 }]}
-          >
-            <Text variant="bodyMedium">{todo.description.trim()}</Text>
-          </View>
-        </List.Accordion>
-      ) : (
-        <List.Item
-          title={todo.title}
-          description={formatCreatedAt(todo.createdAt)}
-          style={itemStyle}
-          titleStyle={titleStyle}
-          left={checkbox}
-        />
-      )}
+      <List.Item
+        title={todo.title}
+        description={formatCreatedAt(todo.createdAt)}
+        style={itemStyle}
+        titleStyle={titleStyle}
+        left={checkbox}
+        right={(props) => <List.Icon {...props} icon="chevron-right" />}
+        onPress={() => onPress(todo)}
+      />
     </Swipeable>
   );
 }
@@ -88,9 +69,5 @@ const styles = StyleSheet.create({
     width: 96,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  expandedContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
   },
 });
