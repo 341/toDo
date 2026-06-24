@@ -39,6 +39,7 @@ export function TodoListFilters({
 
 const styles = StyleSheet.create({
   container: {
+    width: '100%',
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 4,

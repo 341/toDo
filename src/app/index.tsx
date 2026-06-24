@@ -121,25 +121,23 @@ export default function Index() {
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={() => loadTodos(true)} />
             }
-            {...(todos.length > 0
-              ? {
-                  ListHeaderComponent: (
-                    <TodoListFilters
-                      searchQuery={searchQuery}
-                      onSearchQueryChange={setSearchQuery}
-                      statusFilter={statusFilter}
-                      onStatusFilterChange={setStatusFilter}
-                    />
-                  ),
-                }
-              : null)}
+            ListHeaderComponent={
+              <TodoListFilters
+                  searchQuery={searchQuery}
+                  onSearchQueryChange={setSearchQuery}
+                  statusFilter={statusFilter}
+                  onStatusFilterChange={setStatusFilter}
+                />
+            }
             contentContainerStyle={
               filteredTodos.length === 0 ? styles.emptyListContent : styles.listContent
             }
             ListEmptyComponent={
-              <Text variant="bodyLarge" style={styles.message}>
-                {emptyMessage}
-              </Text>
+              <View style={styles.centered}>
+                <Text variant="bodyLarge" style={styles.message}>
+                  {emptyMessage}
+                </Text>
+              </View>
             }
             renderItem={({ item }) => (
               <TodoListItem
@@ -178,10 +176,6 @@ const styles = StyleSheet.create({
     paddingBottom: 88,
   },
   emptyListContent: {
-    flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
     paddingBottom: 88,
   },
   message: {
