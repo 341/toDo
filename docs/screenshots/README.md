@@ -1,7 +1,5 @@
 # Screenshots
 
-Add screenshots or a short screen recording here for the PRITECH technical task submission.
-
 Suggested captures:
 
 1. **Task list** — list with search bar and status filters
@@ -18,4 +16,3 @@ Name files clearly, for example:
 - `toDo-delete-item.png`
 - `toDo-view-item.png`
 
-Link to these files from the **Implementation summary** section in the root [README](../README.md).
