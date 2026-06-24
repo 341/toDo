@@ -123,11 +123,11 @@ export default function Index() {
             }
             ListHeaderComponent={
               <TodoListFilters
-                  searchQuery={searchQuery}
-                  onSearchQueryChange={setSearchQuery}
-                  statusFilter={statusFilter}
-                  onStatusFilterChange={setStatusFilter}
-                />
+                searchQuery={searchQuery}
+                onSearchQueryChange={setSearchQuery}
+                statusFilter={statusFilter}
+                onStatusFilterChange={setStatusFilter}
+              />
             }
             contentContainerStyle={
               filteredTodos.length === 0 ? styles.emptyListContent : styles.listContent

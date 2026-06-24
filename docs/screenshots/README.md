@@ -15,4 +15,3 @@ Name files clearly, for example:
 - `toDo-list-new.png`
 - `toDo-delete-item.png`
 - `toDo-view-item.png`
-

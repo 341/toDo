@@ -31,13 +31,13 @@ This project was built for the PRITECH React Native technical task.
 
 ### Screenshots
 
-| Screen | Preview |
-| ------ | ------- |
-| Empty state | ![Empty state](docs/screenshots/toDo-empty.png) |
-| Task list | ![Task list](docs/screenshots/toDo-list.png) |
-| Create task | ![Create task](docs/screenshots/toDo-new-item.png) |
-| Task details | ![Task details](docs/screenshots/toDo-view-item.png) |
-| Delete task | ![Delete task](docs/screenshots/toDo-delete-item.png) |
+| Screen       | Preview                                               |
+| ------------ | ----------------------------------------------------- |
+| Empty state  | ![Empty state](docs/screenshots/toDo-empty.png)       |
+| Task list    | ![Task list](docs/screenshots/toDo-list.png)          |
+| Create task  | ![Create task](docs/screenshots/toDo-new-item.png)    |
+| Task details | ![Task details](docs/screenshots/toDo-view-item.png)  |
+| Delete task  | ![Delete task](docs/screenshots/toDo-delete-item.png) |
 
 More details in [`docs/screenshots/`](docs/screenshots/README.md).
 
