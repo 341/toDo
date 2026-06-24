@@ -67,7 +67,7 @@ export function TodoListItem({
 const styles = StyleSheet.create({
   deleteAction: {
     width: 96,
-    height: 100,
+    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
   },
