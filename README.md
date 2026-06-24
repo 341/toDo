@@ -33,6 +33,7 @@ This project was built for the PRITECH React Native technical task.
 
 | Screen | Preview |
 | ------ | ------- |
+| Empty state | ![Empty state](docs/screenshots/toDo-empty.png) |
 | Task list | ![Task list](docs/screenshots/toDo-list.png) |
 | Create task | ![Create task](docs/screenshots/toDo-new-item.png) |
 | Task details | ![Task details](docs/screenshots/toDo-view-item.png) |

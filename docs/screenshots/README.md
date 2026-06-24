@@ -12,6 +12,7 @@ Suggested captures:
 
 Name files clearly, for example:
 
+- `toDo-empty.png`
 - `toDo-list.png`
 - `toDo-list-new.png`
 - `toDo-delete-item.png`
